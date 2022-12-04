@@ -1,0 +1,69 @@
+import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
+import { DEFAULT_LOGGER } from "../constants";
+import { getUsers, saveUsers } from "../database";
+import BaseCommand from "./base_command";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import mcdata from "mcdata";
+
+class WarCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: "war",
+            description: "war things",
+            dm_permission: false,
+
+            options: [
+                {
+                    name: "add",
+                    description: "adds new war to player",
+                    type: ApplicationCommandOptionType.Subcommand,
+
+                    options: [
+                        {
+                            name: "username",
+                            description: "the username of the player",
+                            type: ApplicationCommandOptionType.String,
+                            required: true
+                        }
+                    ]
+                },
+                {
+                    name: "remove",
+                    description: "removes latest new point",
+                    type: ApplicationCommandOptionType.Subcommand,
+
+                    options: [
+                        {
+                            name: "username",
+                            description: "the username of the player",
+                            type: ApplicationCommandOptionType.String,
+                            required: true
+                        }
+                    ]
+                }
+            ]
+        });
+    }
+
+    public handle = async (interaction: ChatInputCommandInteraction) => {
+        const command  = interaction.options.getSubcommand(true);
+        await interaction.deferReply().catch(DEFAULT_LOGGER.log);
+        const uuid = await mcdata.player.getUUID(interaction.options.getString("username", true));
+
+        if (command == "add") {
+            const user = await getUsers(uuid);
+            user.wars.push(Date.now());
+            await saveUsers(user);
+            await interaction.followUp(`added war entry to ${await mcdata.player.getUsername(uuid)}`).catch(DEFAULT_LOGGER.log);
+        }
+        if (command == "remove") {
+            const user = await getUsers(uuid);
+            user.wars.pop();
+            await saveUsers(user);
+            await interaction.followUp(`removed lastest war entry to ${await mcdata.player.getUsername(uuid)}`).catch(DEFAULT_LOGGER.log);
+        }
+    }
+}
+
+export default WarCommand;
