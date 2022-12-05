@@ -5,13 +5,15 @@ import BaseCommand, { ApplicationCommandStructure } from "./base_command";
 import PingCommand from "./ping_command";
 import UserCommand from "./user_command";
 import WarCommand from "./war_command";
+import RecruitCommand from "./recruit_command";
 
 const rest = new REST({ version: "10" }).setToken(BOT_TOKEN);
 
 const commands: BaseCommand[] = [
     new PingCommand(),
     new UserCommand(),
-    new WarCommand()
+    new WarCommand(),
+    new RecruitCommand()
 ];
 
 const validationRegex = /^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$/u;

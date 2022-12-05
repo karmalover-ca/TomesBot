@@ -1,14 +1,15 @@
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { MONGO_URI } from "./constants";
+import { Recruitment } from "./commands/recruit_command";
 
 const v: any = {};
 
-export type User = {
+export interface User {
     uuid: string;
     guildObj: boolean;
     exp: {[key: number]: string}
     wars: [...number[]];
-    recruitment: {[key: number]: string}
+    recruitment: [...Recruitment[]];
     lastTome: number | null;
     cValue: number | null;
 }
@@ -19,7 +20,7 @@ export const defaultUser = (uuid: string): User => {
         guildObj: false,
         exp: {},
         wars: [],
-        recruitment: {},
+        recruitment: [],
         lastTome: null,
         cValue: null
     };
@@ -47,7 +48,7 @@ export async function getUsers(uuid: string): Promise<User> {
 
     // typescript
     let r = ru as any;
-    if (r == null) r = defaultUser(uuid);
+    if (r == null) r = defaultUser(uuid); 
 
     delete r._id;
 

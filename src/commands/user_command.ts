@@ -54,9 +54,10 @@ class UserCommand extends BaseCommand {
 
         if (command == "get") {
             const user = JSON.parse(JSON.stringify(await getUsers(uuid)));
+            await saveUsers(user);
             await interaction.followUp("```json\n" + JSON.stringify(user, null, 4) + "```").catch(DEFAULT_LOGGER.log);
         }
-        if (command == "set") {
+        if (command == "add") {
             const user = await getUsers(uuid);
             user.uuid = uuid;
             await saveUsers(user);

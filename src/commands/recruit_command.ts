@@ -1,21 +1,86 @@
-import { ChatInputCommandInteraction } from "discord.js";
+import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { DEFAULT_LOGGER } from "../constants";
 import BaseCommand from "./base_command";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import mcdata from "mcdata";
+import { getUsers, saveUsers } from "../database";
 
 class RecruitCommand extends BaseCommand {
     constructor() {
         super({
             name: "recruit",
-            description: "recruit things!"
+            description: "recruit things!",
+            dm_permission: false,
+
+            options: [
+                {
+                    name: "add",
+                    description: "add new recuitment to player",
+                    type: ApplicationCommandOptionType.Subcommand,
+
+                    options: [
+                        {
+                            name: "username",
+                            description: "the users who recruited the person",
+                            type: ApplicationCommandOptionType.String,
+                            required: true
+                        },
+                        {
+                            name: "recruited",
+                            description: "the user who was recruited",
+                            type: ApplicationCommandOptionType.String,
+                            required: true
+                        }
+                    ]
+                },
+                {
+                    name: "remove",
+                    description: "removes lastest recruited person from user",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    
+                    options: [
+                        {
+                            name: "username",
+                            description: "the user you with to modify",
+                            type: ApplicationCommandOptionType.String,
+                            required: true
+                        }
+                    ]
+                }
+            ]
         });
     }
 
     public handle = async (interaction: ChatInputCommandInteraction) => {
-        interaction.reply("Pong!").catch(DEFAULT_LOGGER.log);
+        const command = interaction.options.getSubcommand(true);
+        await interaction.deferReply().catch(DEFAULT_LOGGER.log);
+        const userUUID = await mcdata.player.getUUID(interaction.options.getString("username", true));
+        
+
+        if (command == "add") {
+            const recuitedUUID = await mcdata.player.getUUID(interaction.options.getString("recruited", true));
+            const user = await getUsers(userUUID);
+            const recruitment = {
+                recuited: recuitedUUID,
+                date: Date.now()
+            }
+            user.recruitment.push(recruitment);
+            await saveUsers(user);
+            await interaction.followUp(`added recruitment entry to ${await mcdata.player.getUsername(userUUID)}`).catch(DEFAULT_LOGGER.log);
+        }
+        if (command == "remove") {
+            const user = await getUsers(userUUID);
+            user.recruitment.pop();
+            await saveUsers(user);
+            await interaction.followUp(`removed latest recruitment entry for ${await mcdata.player.getUsername(userUUID)}`).catch(DEFAULT_LOGGER.log);
+        }
     }
+}
+
+export type Recruitment = {
+    recuited: string;
+    date: number;
 }
 
 export default RecruitCommand;
