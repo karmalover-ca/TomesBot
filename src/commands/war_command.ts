@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { DEFAULT_LOGGER } from "../constants";
-import { getUsers, saveUsers } from "../database";
+import { getUser, saveUser } from "../database";
 import BaseCommand from "./base_command";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -52,15 +52,15 @@ class WarCommand extends BaseCommand {
         const uuid = await mcdata.player.getUUID(interaction.options.getString("username", true));
 
         if (command == "add") {
-            const user = await getUsers(uuid);
+            const user = await getUser(uuid);
             user.wars.push(Date.now());
-            await saveUsers(user);
+            await saveUser(user);
             await interaction.followUp(`added war entry to ${await mcdata.player.getUsername(uuid)}`).catch(DEFAULT_LOGGER.log);
         }
         if (command == "remove") {
-            const user = await getUsers(uuid);
+            const user = await getUser(uuid);
             user.wars.pop();
-            await saveUsers(user);
+            await saveUser(user);
             await interaction.followUp(`removed lastest war entry to ${await mcdata.player.getUsername(uuid)}`).catch(DEFAULT_LOGGER.log);
         }
     }

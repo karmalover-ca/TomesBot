@@ -42,7 +42,7 @@ export function getDatabaseSync(database = "tomes"): Db {
     throw new Error("client not yet initialized");
 }
 
-export async function getUsers(uuid: string): Promise<User> {
+export async function getUser(uuid: string): Promise<User> {
     const db = getDatabaseSync();
     const ru = await db.collection("guild_users").findOne({ uuid: uuid });
 
@@ -55,10 +55,15 @@ export async function getUsers(uuid: string): Promise<User> {
     return r;
 }
 
-export function saveUsers(user: User) {
+export async function saveUser(user: User) {
     const db = getDatabaseSync();
 
-    return db.collection("guild_users").replaceOne({uuid: user.uuid}, user, {
+    return await db.collection("guild_users").replaceOne({uuid: user.uuid}, user, {
         upsert: true
     });
+}
+
+export async function deleteUser(user: User) {
+    const db = getDatabaseSync();
+    const col = await db.collection("guild_users").deleteOne(user);
 }

@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { DEFAULT_LOGGER } from "../constants";
-import { getUsers, saveUsers } from "../database";
+import { defaultUser, getUser, saveUser } from "../database";
 import BaseCommand from "./base_command";
 //import { getName, getUUID } from "../apis/mojang";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -28,20 +28,6 @@ class UserCommand extends BaseCommand {
                             required: true
                         }
                     ]
-                },
-                {
-                    name: "set",
-                    description: "set info about player",
-                    type: ApplicationCommandOptionType.Subcommand,
-                    
-                    options: [
-                        {
-                            name: "username",
-                            description: "the username of the player",
-                            type: ApplicationCommandOptionType.String,
-                            required: true
-                        }
-                    ]
                 }
             ]
         });
@@ -52,16 +38,13 @@ class UserCommand extends BaseCommand {
         const uuid = await mcdata.player.getUUID(interaction.options.getString("username", true));
         await interaction.deferReply().catch(DEFAULT_LOGGER.log);
 
-        if (command == "get") {
-            const user = JSON.parse(JSON.stringify(await getUsers(uuid)));
-            await saveUsers(user);
+        if (command === "get") {
+            const user = JSON.parse(JSON.stringify(await getUser(uuid)));
             await interaction.followUp("```json\n" + JSON.stringify(user, null, 4) + "```").catch(DEFAULT_LOGGER.log);
         }
-        if (command == "add") {
-            const user = await getUsers(uuid);
-            user.uuid = uuid;
-            await saveUsers(user);
-            await interaction.followUp("added user " + await mcdata.player.getUsername(uuid)).catch(console.error);
+        if (command === "reset") {
+            const user = await getUser(uuid);
+            
         }
     }
 }

@@ -4,7 +4,7 @@ import BaseCommand from "./base_command";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import mcdata from "mcdata";
-import { getUsers, saveUsers } from "../database";
+import { getUser, saveUser } from "../database";
 
 class RecruitCommand extends BaseCommand {
     constructor() {
@@ -60,19 +60,19 @@ class RecruitCommand extends BaseCommand {
 
         if (command == "add") {
             const recuitedUUID = await mcdata.player.getUUID(interaction.options.getString("recruited", true));
-            const user = await getUsers(userUUID);
+            const user = await getUser(userUUID);
             const recruitment = {
                 recuited: recuitedUUID,
                 date: Date.now()
             }
             user.recruitment.push(recruitment);
-            await saveUsers(user);
+            await saveUser(user);
             await interaction.followUp(`added recruitment entry to ${await mcdata.player.getUsername(userUUID)}`).catch(DEFAULT_LOGGER.log);
         }
         if (command == "remove") {
-            const user = await getUsers(userUUID);
+            const user = await getUser(userUUID);
             user.recruitment.pop();
-            await saveUsers(user);
+            await saveUser(user);
             await interaction.followUp(`removed latest recruitment entry for ${await mcdata.player.getUsername(userUUID)}`).catch(DEFAULT_LOGGER.log);
         }
     }
