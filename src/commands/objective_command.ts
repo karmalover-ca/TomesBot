@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
-import { DEFAULT_LOGGER } from "../constants";
+import { LOGGER } from "../constants";
 import BaseCommand from "./base_command";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -31,12 +31,12 @@ class ObjectiveCommand extends BaseCommand {
     }
 
     public handle =async (interaction: ChatInputCommandInteraction) => {
-        await interaction.deferReply().catch(DEFAULT_LOGGER.log);
+        await interaction.deferReply().catch(LOGGER.error);
         const userUUID = await mcdata.player.getUUID(interaction.options.getString("username", true));
         const user = await getUser(userUUID);
         user.guildObj = interaction.options.getBoolean("completed", true);
         await saveUser(user);
-        interaction.followUp(`changed guild objective status to ${user.guildObj} for ${await mcdata.player.getUsername(userUUID)}`).catch(DEFAULT_LOGGER.log);
+        interaction.followUp(`changed guild objective status to ${user.guildObj} for ${await mcdata.player.getUsername(userUUID)}`).catch(LOGGER.error);
     }
 }
 

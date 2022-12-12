@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
-import { DEFAULT_LOGGER, WEIGHTS } from "../constants";
+import { LOGGER, WEIGHTS } from "../constants";
 import BaseCommand from "./base_command";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -54,14 +54,14 @@ class TomeCommand extends BaseCommand {
 
     public handle = async (interaction: ChatInputCommandInteraction) => {
         const command = interaction.options.getSubcommand(true);
-        await interaction.deferReply().catch(DEFAULT_LOGGER.log);
+        await interaction.deferReply().catch(LOGGER.error);
         const userUUID = await mcdata.player.getUUID(interaction.options.getString("username", true));
         
         if (command === "award") {
             const user = await getUser(userUUID);
             user.lastTome = 1668516441000;
             await saveUser(user);
-            interaction.followUp(`changed last tome status to \`${Date().toString()}\` for ${await mcdata.player.getUsername(userUUID)}`).catch(DEFAULT_LOGGER.log);
+            interaction.followUp(`changed last tome status to \`${Date().toString()}\` for ${await mcdata.player.getUsername(userUUID)}`).catch(LOGGER.error);
         }
         if (command === "calc") {
             const user = await getUser(userUUID);

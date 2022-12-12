@@ -1,5 +1,5 @@
 import { Client } from "discord.js";
-import { FileLogger, ConsoleLogger } from "./logging";
+import { ConsoleLogger, FileLogger, Logger } from "./logger";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -11,6 +11,8 @@ export const GUILD_COUNT = (client: Client): number => {
     return client.guilds.cache.size;
 }
 
+export const IS_PRODUCTION: boolean = process.env.PRODUCTION != undefined;
+
 export const APPLICATION_ID: string = "1015266412845084754";
 
 export const BOT_TOKEN: string = process.env.BOT_TOKEN!;
@@ -19,7 +21,7 @@ export const DEV_SERVER = process.env.TEST_SERVER_ID;
 
 export const DEV_ENVIRONMENT = DEV_SERVER != undefined;
 
-export const DEFAULT_LOGGER = DEV_ENVIRONMENT ? new ConsoleLogger() : new FileLogger(process.env.LOGFILE || (__dirname + "./log.log"));
+export const LOGGER: Logger = IS_PRODUCTION ? new FileLogger(process.env.LOG_FILE ?? "./tomesBot.log") : new ConsoleLogger();
 
 export const MONGO_URI = process.env.MONGODB_URI || "";
 

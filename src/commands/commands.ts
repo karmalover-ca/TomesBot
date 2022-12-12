@@ -1,5 +1,5 @@
 import { ApplicationCommand, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, REST, Routes, Snowflake } from "discord.js";
-import { APPLICATION_ID, BOT_TOKEN, DEV_ENVIRONMENT, DEV_SERVER, DEFAULT_LOGGER } from "../constants";
+import { APPLICATION_ID, BOT_TOKEN, DEV_ENVIRONMENT, DEV_SERVER, LOGGER } from "../constants";
 
 import BaseCommand, { ApplicationCommandStructure } from "./base_command";
 import PingCommand from "./ping_command";
@@ -60,7 +60,7 @@ const commandHandler = (interaction: ChatInputCommandInteraction) => {
     const i = commands.findIndex(v => v.definition.name == interaction.commandName);
 
     const r = commands[i].handle(interaction);
-    if (r instanceof Promise) r.catch(DEFAULT_LOGGER.log);
+    if (r instanceof Promise) r.catch(LOGGER.error);
 }
 
 export { registerCommands, commandHandler, registerTagCommand, removeTagCommand };

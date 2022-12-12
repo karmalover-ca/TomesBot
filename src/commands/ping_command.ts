@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { DEFAULT_LOGGER } from "../constants";
+import { LOGGER } from "../constants";
 import BaseCommand from "./base_command";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -14,7 +14,7 @@ class PingCommand extends BaseCommand {
     }
 
     public handle = async (interaction: ChatInputCommandInteraction) => {
-        interaction.reply("Pong!").catch(DEFAULT_LOGGER.log);
+        interaction.reply("Pong!").catch(LOGGER.error);
     }
 }
 

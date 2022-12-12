@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
-import { DEFAULT_LOGGER } from "../constants";
+import { LOGGER } from "../constants";
 import { getUser, saveUser } from "../database";
 import BaseCommand from "./base_command";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -48,20 +48,20 @@ class WarCommand extends BaseCommand {
 
     public handle = async (interaction: ChatInputCommandInteraction) => {
         const command  = interaction.options.getSubcommand(true);
-        await interaction.deferReply().catch(DEFAULT_LOGGER.log);
+        await interaction.deferReply().catch(LOGGER.error);
         const uuid = await mcdata.player.getUUID(interaction.options.getString("username", true));
 
         if (command == "add") {
             const user = await getUser(uuid);
             user.wars.push(Date.now());
             await saveUser(user);
-            await interaction.followUp(`added war entry to ${await mcdata.player.getUsername(uuid)}`).catch(DEFAULT_LOGGER.log);
+            await interaction.followUp(`added war entry to ${await mcdata.player.getUsername(uuid)}`).catch(LOGGER.error);
         }
         if (command == "remove") {
             const user = await getUser(uuid);
             user.wars.pop();
             await saveUser(user);
-            await interaction.followUp(`removed lastest war entry to ${await mcdata.player.getUsername(uuid)}`).catch(DEFAULT_LOGGER.log);
+            await interaction.followUp(`removed lastest war entry to ${await mcdata.player.getUsername(uuid)}`).catch(LOGGER.error);
         }
     }
 }

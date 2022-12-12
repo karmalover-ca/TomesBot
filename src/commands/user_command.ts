@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
-import { DEFAULT_LOGGER } from "../constants";
+import { LOGGER } from "../constants";
 import { defaultUser, getUser, saveUser } from "../database";
 import BaseCommand from "./base_command";
 //import { getName, getUUID } from "../apis/mojang";
@@ -36,11 +36,11 @@ class UserCommand extends BaseCommand {
     public handle = async (interaction: ChatInputCommandInteraction) => {
         const command  = interaction.options.getSubcommand(true);
         const uuid = await mcdata.player.getUUID(interaction.options.getString("username", true));
-        await interaction.deferReply().catch(DEFAULT_LOGGER.log);
+        await interaction.deferReply().catch(LOGGER.error);
 
         if (command === "get") {
             const user = JSON.parse(JSON.stringify(await getUser(uuid)));
-            await interaction.followUp("```json\n" + JSON.stringify(user, null, 4) + "```").catch(DEFAULT_LOGGER.log);
+            await interaction.followUp("```json\n" + JSON.stringify(user, null, 4) + "```").catch(LOGGER.error);
         }
         if (command === "reset") {
             const user = await getUser(uuid);
