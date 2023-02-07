@@ -67,6 +67,8 @@ class TomeCommand extends BaseCommand {
             const user = await getUser(userUUID);
             const exp = interaction.options.getNumber("exp", true);
             const c = calcC(user, exp)
+            user.cValue = c;
+            await saveUser(user);
             
             interaction.followUp(`exp ${exp}, c ${c}`);
         }

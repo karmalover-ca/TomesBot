@@ -1,8 +1,5 @@
 import { Client } from "discord.js";
 import { ConsoleLogger, FileLogger, Logger } from "./logger";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 export const CURRENT_VERSION = "0.0.1";
 
@@ -13,9 +10,9 @@ export const GUILD_COUNT = (client: Client): number => {
 
 export const IS_PRODUCTION: boolean = process.env.PRODUCTION != undefined;
 
-export const APPLICATION_ID: string = "1015266412845084754";
+export const APPLICATION_ID: string = process.env.APPLICATION_ID || "";
 
-export const BOT_TOKEN: string = process.env.BOT_TOKEN!;
+export const BOT_TOKEN: string = process.env.BOT_TOKEN || "";
 
 export const DEV_SERVER = process.env.TEST_SERVER_ID;
 
