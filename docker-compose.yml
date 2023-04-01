@@ -1,0 +1,30 @@
+services:
+  bot:
+    image: node:latest
+    restart: on-failure #Change to always in production
+    command: sh -c "yarn install && yarn run dev"
+    working_dir: /tomesbot
+    volumes:
+      - ./:/tomesbot
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      TEST_SERVER_ID: ${TEST_SERVER_ID}
+      APPLICATION_ID: ${APPLICATION_ID}
+      LOGFILE: ./tomes.log
+      MONGODB_URI: mongodb://root:password@mongodb
+      #Uncomment in production
+      #PRODUCTION: true
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    restart: on-failure #Change to always in producation
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+volumes:
+  mongo-data:
