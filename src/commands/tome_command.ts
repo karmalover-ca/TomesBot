@@ -59,7 +59,7 @@ class TomeCommand extends BaseCommand {
         
         if (command === "award") {
             const user = await getUser(userUUID);
-            user.lastTome = 1668516441000;
+            user.lastTome = Date.now();
             await saveUser(user);
             interaction.followUp(`changed last tome status to \`${Date().toString()}\` for ${await mcdata.player.getUsername(userUUID)}`).catch(LOGGER.error);
         }
@@ -81,19 +81,19 @@ export function calcC(user: User, xp: number) {
     const wars = user.wars.length;
     const gobj = +user.guildObj;
     const wei = calcWeight(user.lastTome);
-    return ((exp + rec + wars + gobj) * wei!)
+    return ((exp + rec + wars + gobj) * wei!);
 }
 
 export function calcWeight(number: number | null) {
     if (number === null) return 1.15;
 
-    const daysSinceLastTome = Math.round((Date.now() - number) / 1000 / 60 / 60 / 24)
+    const daysSinceLastTome = Math.round((Date.now() - number) / 1000 / 60 / 60 / 24);
 
-    if (daysSinceLastTome < 0) return 0.15;
+    if (daysSinceLastTome < 0) return 1.15;
 
     for (let [key, value] of WEIGHTS) {
         if (daysSinceLastTome <= key) {
-            return value
+            return value;
         }
     }
 }
