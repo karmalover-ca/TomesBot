@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from "discord.js";
 import { LOGGER } from "../constants";
-import { defaultUser, getUser, saveUser } from "../database";
+import { defaultUser, getUser, saveUser, deleteUser } from "../database";
 import BaseCommand from "./base_command";
 //import { getName, getUUID } from "../apis/mojang";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -28,6 +28,19 @@ class UserCommand extends BaseCommand {
                             required: true
                         }
                     ]
+                },
+                {
+                    name: "reset",
+                    description: "resets all gathered info about a player",
+                    type: ApplicationCommandOptionType.Subcommand,
+                    options: [
+                        {
+                            name: "username",
+                            description: "the username of the player",
+                            type: ApplicationCommandOptionType.String,
+                            required: true
+                        }
+                    ]
                 }
             ]
         });
@@ -44,7 +57,8 @@ class UserCommand extends BaseCommand {
         }
         if (command === "reset") {
             const user = await getUser(uuid);
-            
+            await deleteUser(user);
+            await interaction.followUp(`Deleted all data for user ${await mcdata.player.getUsername(uuid)}.`)
         }
     }
 }
