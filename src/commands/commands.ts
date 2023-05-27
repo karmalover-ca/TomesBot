@@ -8,6 +8,7 @@ import WarCommand from "./war_command";
 import RecruitCommand from "./recruit_command";
 import ObjectiveCommand from "./objective_command";
 import TomeCommand from "./tome_command";
+import DebugCommand from "./debug";
 
 const rest = new REST({ version: "10" }).setToken(BOT_TOKEN);
 
@@ -17,7 +18,8 @@ const commands: BaseCommand[] = [
     new WarCommand(),
     new RecruitCommand(),
     new ObjectiveCommand(),
-    new TomeCommand()
+    new TomeCommand(),
+    new DebugCommand()
 ];
 
 const validationRegex = /^[-_\p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$/u;
@@ -32,7 +34,7 @@ const registerCommands = () => {
 
         return rest.put(Routes.applicationGuildCommands(APPLICATION_ID, DEV_SERVER as string), {
             body: definitions
-        });
+          });
     }
     return rest.put(Routes.applicationCommands(APPLICATION_ID), {
         body: commands.map(c => c.definition)
