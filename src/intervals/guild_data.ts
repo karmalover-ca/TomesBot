@@ -9,7 +9,7 @@ async function startInterval() {
         } catch (error) {
             LOGGER.error("error in interval: " + error);
         }
-    }, 1000 * 30)
+    }, 1000 * 60 * 10)
 }
 
 export default startInterval;
