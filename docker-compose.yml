@@ -21,10 +21,7 @@ services:
     image: mongo:latest
     restart: on-failure #Change to always in producation
     volumes:
-      - mongo-data:/data/db
+      - ./mongo-data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
-
-volumes:
-  mongo-data:
