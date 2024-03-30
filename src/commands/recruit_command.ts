@@ -16,7 +16,7 @@ class RecruitCommand extends BaseCommand {
             options: [
                 {
                     name: "add",
-                    description: "add new recuitment to player",
+                    description: "add new recruitment to player",
                     type: ApplicationCommandOptionType.Subcommand,
 
                     options: [
@@ -36,7 +36,7 @@ class RecruitCommand extends BaseCommand {
                 },
                 {
                     name: "remove",
-                    description: "removes lastest recruited person from user",
+                    description: "removes latest recruited person from user",
                     type: ApplicationCommandOptionType.Subcommand,
                     
                     options: [
@@ -59,10 +59,10 @@ class RecruitCommand extends BaseCommand {
         
 
         if (command == "add") {
-            const recuitedUUID = await mcdata.player.getUUID(interaction.options.getString("recruited", true)).catch(LOGGER.error);
+            const recruitedUUID = await mcdata.player.getUUID(interaction.options.getString("recruited", true)).catch(LOGGER.error);
             const user = await getUser(userUUID);
             const recruitment = {
-                recuited: recuitedUUID,
+                recruited: recruitedUUID,
                 date: Date.now() + (1000 * 60)
             }
             user.recruitment.push(recruitment);
@@ -79,7 +79,7 @@ class RecruitCommand extends BaseCommand {
 }
 
 export type Recruitment = {
-    recuited: string;
+    recruited: string;
     date: number;
 }
 

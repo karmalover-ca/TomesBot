@@ -42,7 +42,7 @@ class TomeCommand extends BaseCommand {
                         },
                         {
                             name: "exp",
-                            description: "exp for temp since i dont have it wory",
+                            description: "exp for temp since i don't have it worry",
                             type: ApplicationCommandOptionType.Number,
                             required: true
                         }

@@ -61,7 +61,7 @@ class WarCommand extends BaseCommand {
             const user = await getUser(uuid);
             user.wars.pop();
             await saveUser(user);
-            await interaction.followUp(`removed lastest war entry to ${await mcdata.player.getUsername(uuid)}`).catch(LOGGER.error);
+            await interaction.followUp(`removed latest war entry to ${await mcdata.player.getUsername(uuid)}`).catch(LOGGER.error);
         }
     }
 }
