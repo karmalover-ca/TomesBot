@@ -1,5 +1,5 @@
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { MONGO_URI } from "./constants";
+import { LOGGER, MONGO_URI } from "./constants";
 import { Recruitment } from "./commands/recruit_command";
 
 const v: any = {};
@@ -52,6 +52,8 @@ export async function getUser(uuid: string): Promise<User> {
 
     delete r._id;
 
+    r = clearOldUserObjects(r);
+
     return r;
 }
 
@@ -66,4 +68,17 @@ export async function saveUser(user: User) {
 export async function deleteUser(user: User) {
     const db = getDatabaseSync();
     const col = await db.collection("guild_users").deleteOne(user);
+}
+
+
+async function clearOldUserObjects(user: User): Promise<User> {
+    let itemsToRemove: any;
+    for (const recruitment of user.recruitment) {
+        if(recruitment.date <= Date.now()) {
+            user.recruitment = user.recruitment.filter(item => item !== recruitment);
+        }
+    }
+    saveUser(user);
+
+    return user;
 }

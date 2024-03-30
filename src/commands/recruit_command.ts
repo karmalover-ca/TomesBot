@@ -59,11 +59,11 @@ class RecruitCommand extends BaseCommand {
         
 
         if (command == "add") {
-            const recuitedUUID = await mcdata.player.getUUID(interaction.options.getString("recruited", true));
+            const recuitedUUID = await mcdata.player.getUUID(interaction.options.getString("recruited", true)).catch(LOGGER.error);
             const user = await getUser(userUUID);
             const recruitment = {
                 recuited: recuitedUUID,
-                date: Date.now()
+                date: Date.now() + (1000 * 60)
             }
             user.recruitment.push(recruitment);
             await saveUser(user);
