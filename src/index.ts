@@ -2,7 +2,7 @@ import { Client } from "discord.js";
 import { commandHandler, registerCommands } from "./commands/commands";
 import { BOT_TOKEN, CURRENT_VERSION, DEV_ENVIRONMENT, DEV_SERVER, LOGGER } from "./constants";
 import { getClient } from "./database";
-import guildInterval from "./intervals/guild_data"
+import startInterval from "./intervals/guild_data"
 
 const client = new Client({
     intents: ["DirectMessages","DirectMessageTyping","DirectMessageReactions","GuildMessages","GuildMessageTyping","GuildMessageReactions"]
@@ -10,7 +10,7 @@ const client = new Client({
 
 client.on("ready", () => {
     LOGGER.info("Tomes bot online. Version v" + CURRENT_VERSION);
-    guildInterval();
+    startInterval();
 });
 
 client.on("interactionCreate", (interaction) => {

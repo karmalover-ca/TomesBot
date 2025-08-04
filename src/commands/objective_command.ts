@@ -30,7 +30,7 @@ class ObjectiveCommand extends BaseCommand {
         })
     }
 
-    public handle =async (interaction: ChatInputCommandInteraction) => {
+    public handle = async (interaction: ChatInputCommandInteraction) => {
         await interaction.deferReply().catch(LOGGER.error);
         const userUUID = await mcdata.player.getUUID(interaction.options.getString("username", true));
         const user = await getUser(userUUID);

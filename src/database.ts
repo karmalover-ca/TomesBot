@@ -7,9 +7,9 @@ const v: any = {};
 export interface User {
     uuid: string;
     guildObj: boolean;
-    exp: {[key: number]: string}
-    wars: [...number[]];
-    recruitment: [...Recruitment[]];
+    exp: number[];
+    wars: number[];
+    recruitment: Recruitment[];
     lastTome: number | null;
     cValue: number | null;
 }
@@ -18,7 +18,7 @@ export const defaultUser = (uuid: string): User => {
     return {
         uuid: uuid,
         guildObj: false,
-        exp: {},
+        exp: [],
         wars: [],
         recruitment: [],
         lastTome: null,
@@ -58,6 +58,7 @@ export async function getUser(uuid: string): Promise<User> {
 }
 
 export async function saveUser(user: User) {
+
     const db = getDatabaseSync();
 
     return await db.collection("guild_users").replaceOne({uuid: user.uuid}, user, {

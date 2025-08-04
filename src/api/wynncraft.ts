@@ -2,6 +2,7 @@ import axios from "axios";
 import { LOGGER } from "../constants";
 
 const API_URL = "https://api.wynncraft.com/v3/"
+const RANKS = ['owner', 'chief', 'strategist', 'captain', 'recruiter', 'recruit'] as const;
 
 class GuildNotFoundError extends Error {}
 class MemberNotFoundError extends Error {}
@@ -79,16 +80,28 @@ export async function getGuildMember(guildName: string, memberName: string): Pro
     try {
         const guild: Guild = await getGuild(guildName);
 
-        //console.log(guild.members)
-        const member: GuildMember = await extractMember(guild.members, memberName);
+        for (const rank of RANKS) {
+            const rankData = guild.members[rank];
+            if (!rankData) continue;
 
-        if (member.uuid === "") {
-            const errorMsg = `Member '${memberName}' not found in guild '${guildName}'.`
-            LOGGER.warn(errorMsg);
-            throw new MemberNotFoundError(errorMsg);
+            for (const username in rankData) {
+                if (username === memberName) {
+                    const user = rankData[username];
+                    return {
+                        username,
+                        uuid: user.uuid,
+                        contributed: user.contributed
+                    }
+
+                }
+            }
         }
 
-        return member;
+        return {
+            uuid: "",
+            username: "",
+            contributed: 0
+        };
 
     } catch (error) {
         LOGGER.warn(error);
@@ -96,40 +109,36 @@ export async function getGuildMember(guildName: string, memberName: string): Pro
     }
 }
 
+
 /**
- * Parses raw member data to extract a member by username
- * @param data raw guild member data
- * @param memberName member you wish to extract
- * @returns GuildMember Object
+ * Fetch all members and their details from a guild
+ * @param guildName Exact name of the guild
+ * @returns GuildMember object array
  */
-async function extractMember(data: MembersData, memberName: string): Promise<GuildMember> {
-    const roles = ['owner', 'chief', 'strategist', 'captain', 'recruiter', 'recruit'] as const;
+export async function getGuildMembers(guildName: string): Promise<GuildMember[]> {
+    try {
+        const guild: Guild = await getGuild(guildName);
 
-    let result: GuildMember = {
-        uuid: "",
-        username: "",
-        contributed: 0
-    };
+        let result: GuildMember[] = [];
 
-    for (const role of roles) {
-        const roleData = data[role];
-        if (!roleData) continue;
+        for (const rank of RANKS) {
+            const rankData = guild.members[rank];
+            if (!rankData) continue;
 
-        for (const username in roleData) {
-
-            if (username === memberName) {
-                const info = roleData[username];
-
-                return {
+            for (const username in rankData) {
+                const user = rankData[username];
+                result.push({
                     username,
-                    uuid: info.uuid,
-                    contributed: info.contributed
-                }
-
+                    uuid: user.uuid,
+                    contributed: user.contributed
+                });
             }
-            
         }
-    }
 
-    return result;
+        return result;
+
+    } catch (error) {
+        LOGGER.warn(error);
+        throw error;
+    }
 }
