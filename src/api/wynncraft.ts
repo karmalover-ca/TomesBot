@@ -7,16 +7,33 @@ class GuildNotFoundError extends Error {}
 class MemberNotFoundError extends Error {}
 class ApiError extends Error {}
 
+
+interface MemberInfo {
+    uuid: string; 
+    online: boolean;
+    server: string | null;
+    contributed: number;
+    contributionRank?: number;
+    joined: string;
+}
+
+interface MembersData {
+    total: number;
+    owner?: MemberInfo[];
+    chief?: MemberInfo[];
+    strategist?: MemberInfo[];
+    captain?: MemberInfo[];
+    recruiter?: MemberInfo[];
+    recruit?: MemberInfo[];
+}
+
 /**
  * Guild member type definition from Wynn API v3
  */
 export interface GuildMember {
-    name: string;
     uuid: string;
-    joined: number; // unix timestamp
-    contributed: number; // total xp contributed to the guild
-    playtime: number; // total playtime
-    wars: number; // total wars participated in
+    username: string;
+    contributed: number;
 }
 
 /**
@@ -27,7 +44,7 @@ export interface Guild {
     prefix: string;
     level: string;
     xp: string;
-    members: GuildMember[];
+    members: MembersData;
 }
 
 /**
@@ -37,7 +54,7 @@ export interface Guild {
  */
 export async function getGuild(guildName: string): Promise<Guild> {
     try {
-        const res = await axios.get<Guild>(`${API_URL}/guild/${encodeURIComponent(guildName)}`);
+        const res = await axios.get<Guild>(`${API_URL}/guild/${encodeURIComponent(guildName)}?identifier=username`);
         return res.data;
     } catch (error: any) {
         LOGGER.warn(`Failed to fetch guild '${guildName}' Error:\n${error}`);
@@ -62,9 +79,10 @@ export async function getGuildMember(guildName: string, memberName: string): Pro
     try {
         const guild: Guild = await getGuild(guildName);
 
-        const member = guild.members.find((m) => m.name.toLowerCase() === memberName.toLowerCase());
+        //console.log(guild.members)
+        const member: GuildMember = await extractMember(guild.members, memberName);
 
-        if (!member) {
+        if (member.uuid === "") {
             const errorMsg = `Member '${memberName}' not found in guild '${guildName}'.`
             LOGGER.warn(errorMsg);
             throw new MemberNotFoundError(errorMsg);
@@ -76,4 +94,42 @@ export async function getGuildMember(guildName: string, memberName: string): Pro
         LOGGER.warn(error);
         throw error;
     }
+}
+
+/**
+ * Parses raw member data to extract a member by username
+ * @param data raw guild member data
+ * @param memberName member you wish to extract
+ * @returns GuildMember Object
+ */
+async function extractMember(data: MembersData, memberName: string): Promise<GuildMember> {
+    const roles = ['owner', 'chief', 'strategist', 'captain', 'recruiter', 'recruit'] as const;
+
+    let result: GuildMember = {
+        uuid: "",
+        username: "",
+        contributed: 0
+    };
+
+    for (const role of roles) {
+        const roleData = data[role];
+        if (!roleData) continue;
+
+        for (const username in roleData) {
+
+            if (username === memberName) {
+                const info = roleData[username];
+
+                return {
+                    username,
+                    uuid: info.uuid,
+                    contributed: info.contributed
+                }
+
+            }
+            
+        }
+    }
+
+    return result;
 }
