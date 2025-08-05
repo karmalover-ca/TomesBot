@@ -16,25 +16,23 @@ async function updateUsers() {
         //LOGGER.debug(`Updating member '${member.username}'`)
         const user: User = await getUser(member.uuid.replace(/-/g, ""));
 
-        const lastExp = user.exp[0] ?? null;
-        const current = member.contributed;
-
-        if (lastExp === current) {
-            //LOGGER.warn(`Did not update for user '${member.username}' ${lastExp} ${current}`);
-            continue;
-        };
-
         if (!Array.isArray(user.exp)) {
             user.exp = [];
         }
 
-        user.exp.push(current);
+        const current = member.contributed;
 
-        if (user.exp.length > 2) user.exp.shift();
+        if (user.exp[0] === undefined) {
+            user.exp[0] = current;
+            user.exp[1] = current;
+        } else if (user.exp[1] !== current) {
+            user.exp[1] = current;
+        } else {
+            continue;
+        }
+        
 
-        LOGGER.debug(`Updated user '${member.username}' - ${lastExp} -> ${current}`);
-
-        console.log(user);
+        LOGGER.debug(`Updated user '${member.username}' - exp[0] '${user.exp[0]}' | exp[1] '${user.exp[1]}'`);
 
         await saveUser(user);
     }

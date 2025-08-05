@@ -39,12 +39,6 @@ class TomeCommand extends BaseCommand {
                             description: "username of player to calculate c value",
                             type: ApplicationCommandOptionType.String,
                             required: true
-                        },
-                        {
-                            name: "exp",
-                            description: "exp for temp since i don't have it worry",
-                            type: ApplicationCommandOptionType.Number,
-                            required: true
                         }
                     ]
                 }
@@ -65,7 +59,7 @@ class TomeCommand extends BaseCommand {
         }
         if (command === "calc") {
             const user = await getUser(userUUID);
-            const exp = interaction.options.getNumber("exp", true);
+            const exp = user.exp[1] - user.exp[0];
             const c = calcC(user, exp)
             user.cValue = c;
             await saveUser(user);
